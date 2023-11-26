@@ -1,0 +1,327 @@
+% vim:ft=tex
+% \documentclass[sigplan,screen,nonacm,natbib=false,balance=false,11pt]{acmart}
+\documentclass[11pt]{article}
+
+% macros
+\input{prelude.tex}
+
+% metadata
+\title{Category $\cO$}
+\author{Riley Shahar}
+\date{}
+% \orcid{0009-0003-9485-4399}
+% \affiliation{
+% 	\institution{Reed College}
+% 	\city{Portland}
+% 	% \state{Oregon}
+% 	\country{USA}
+% }
+% \email{rileyshahar@reed.edu}
+
+% \keywords{TODO}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+	[abstract goes here]
+\end{abstract}
+
+\section{Introduction}
+
+ [Introduction goes here.] We largely follow \cite{humphreys} and \cite[Chapter
+	19]{carter}.
+
+In \Cref{sec:preliminaries}, we recall some basic notions from categorical
+algebra, in particular the notion of an abelian category. We define category
+$\cO$ in \Cref{sec:definition} and explore its basic categorical properties. In
+\Cref{sec:decomposition}, we study the \emph{block decomposition} of $\cO$ into
+blocks defined by central characters. We then study the action of
+\emph{translation functors} on these blocks in \Cref{sec:translation functors}.
+\Cref{sec:conclusion} concludes.
+
+\section{Preliminaries}
+\label{sec:preliminaries}
+
+\subsection{Data}
+
+We fix throughout a finite-dimensional semisimple complex Lie algebra $\fg$ with
+Cartan subalgebra $\fh$. We choose roots $R$ and positive roots $R^+$, inducing
+a decomposition
+\begin{equation}\label{eqn:cartan decomposition}
+	\fg = \fn^-\oplus\fh\oplus\fn =
+	\bigoplus_{\alpha<0}\fg_\alpha\oplus\fh\oplus\bigoplus_{\alpha>0}\fg_\alpha
+\end{equation}
+and Borel subalgebra $\fb = \fh\oplus\fn$. As usual, we denote by $U\fg$ and
+$Z\fg$ the universal enveloping algebra of $\fg$ and its center, respectively.
+
+\subsection{Abelian Categories}
+\label{sec:abelian categories}
+
+The category $\scat{Grp}$ of groups is surprisingly hard to work with. In
+particular, we cannot quotient by an arbitrary subgroup: instead, we can only
+quotient by normal subgroups. Category-theoretically, where we prefer to work
+with morphisms, the central difficulty is that given a subgroup, it does not
+necessarily emerge as the kernel of a homomorphism. In contrast, the category
+$\scat{Ab}$ of abelian groups is extremely nice. Because any abelian group is
+normal, we can take a quotient by any subgroup in $\scat{Ab}$, and
+correspondingly, any subgroup emerges as the kernel of some homomorphism.
+
+Similarly, the category $\scat{Ring}$ of rings is not as nice as we would like:
+we can only quotient by ideals, rather than arbitrary subrings. Even the
+category $\scat{CRing}$ of commutative rings is not good enough. Instead, we
+prefer to work in the category $\Mod R$ of modules over a ring $R$. Any subring
+of $R$ is a module of $R$, and we can take a quotient of any two modules and get
+another module, so any subring has a quotient---and hence is the kernel of some
+morphism---in $\Mod R$.
+
+The notion of an \emph{abelian category} formalizes the properties needed to do
+categorical algebra, and in particular to have well-behaved quotients. A
+definition can be found in any standard text on categorical algebra, such
+as~\cite{borceux}. In lieu of reproducing it here, we state the two most
+important properties.
+
+First, each hom-set $\Hom(A, B)$ is an abelian group\footnote{
+	In categorical language, we say that an abelian category is \emph{enriched} in
+	the category \scat{Ab} of abelian groups. An \scat{Ab}-enriched category is
+	also called an \emph{additive} category.
+}. This means that we can add morphisms with the same domain and codomain. Even
+better, we can combine abelian categories with the same operations we use to
+combine abelian groups. For example, given two abelian categories $\cat{A}$ and
+$\cat{B}$, we can form their direct sum $\cat{A}\oplus\cat{B}$, whose objects
+are pairs $(A,B)$ of objects in $\cat{A}$ and $\cat{B}$, and whose hom-sets are
+given by \[ \Hom((A,B), (A',B')) = \Hom(A,A')\oplus\Hom(B,B'). \]
+
+Second, abelian categories are have extremely well-behaved kernels and
+cokernels. In particular, given any morphism $f: A\rightarrow B$, we can find a
+universal morphism $\ker f: K\rightarrow A$ which factors through $f$ as the
+zero map. Conversely, \emph{every} subobject\footnote{The notion of
+	\emph{subobject} is the categorical generalization of subset, subgroup, etc.} is
+the kernel of some other morphism---this categorically represents the intuitive
+idea that every subgroup of an abelian group is normal.
+
+% Third, products and coproducts exist and coincide in abelian categories.
+
+\subsection{Noetherian and Artinian Categories}
+
+Consider some ascending chain of inclusions \[
+	X_1\hookrightarrow X_2\hookrightarrow X_3\hookrightarrow\cdots
+\]
+of submodules of a module (or subobjects of an object) $X$. We say $X$ is
+\emph{Noetherian} if any such sequence stabilizes. A category is
+Noetherian\footnote{
+	For foundational reasons, we also ask that the category is \emph{essentially
+		small}, meaning it is equivalent to a category whose morphisms form a set. We
+	do not worry about such issues here; all of our categories are essentially
+	small. See~\cite[Section 1.6]{maclane} for more details.
+} if each object is
+Noetherian.
+
+Dually, an object is \emph{Artinian} if any descending chain of
+inclusions stabilizes, and a category is Artinian if each object is Artinian.
+
+\section{Basic Properties}
+\label{sec:definition}
+
+\subsection{Definition}
+
+We can now define our main object:
+\begin{dfn}[category $\cO$]\label{def:category O}
+	Category $\cO$ consists of all $U\fg$-modules $V$ which are
+	\begin{enumerate}[label={\Roman*}., ref={\Roman*}]
+		\item \emph{finitely generated}: there is a finite subset of $V$ whose
+		      $U\fg$-orbit is $V$;\label{ax:finitely generated}
+		\item \emph{$\fh$-semisimple}: $\fh$ acts semisimply on
+		      $V$;\label{ax:h-semisimple}
+		\item \emph{locally $\fn$-finite}: each $U\fn$-orbit is finite
+		      dimensional.\label{ax:n-finite}
+	\end{enumerate}
+	Morphisms in $\cO$ are $U\fg$-module homomorphisms\footnote{
+		In categorical language, we say that $\cO$ is a \emph{full subcategory} of
+		$\Mod U\fg$, indicating that \[\Hom_\cO(V, W) = \Hom_{\Mod U\fg}(V, W)\] for
+		any objects $V,W$ of $\cO$.
+	}.
+\end{dfn}
+
+A few remarks on the definition. Finite generation does not imply that $V$ is
+finite-dimensional as a vector space, since the $U\fg$-orbit of an element may
+leave its $\CC$-span. The assertion that $\fh$ acts semisimply states exactly
+that\[ V = \bigoplus_{\lambda\in\fh^*}V_\lambda, \]i.e. that $V$ is a weight
+module. Furthermore, each weight space in $V$ is in fact finite-dimensional, as
+$U\fn$ spans only a finite dimension while $U\fh$ fixes this space. As a
+consequence, the $Z\fg$-span of any vector in $V$ is finite-dimensional, since
+it is contained in a sum of weight spaces. In short, the modules in $\cO$
+are \emph{very} nice.
+
+	[Discuss that Verma modules and finite-dimensional modules are in $\cO$.]
+
+\subsection{Categorical Properties}
+
+We now consider the basic categorical properties of $\cO$.
+
+Since $\Mod U\fg$ is Noetherian, $\cO$ is also Noetherian. It follows that $\cO$
+is closed under quotients, submodules, and finite direct sums. For example, in
+the case of a submodule $W$ of a module $V\in\cO$, observe that $\fh$ still acts
+semisimply on $W$, while $U\fn$-orbits are identical to the orbits in $V$, and
+so finite-dimensional. Finite-generation is preserved because $\cO$ is
+Noetherian---if $W$ were not finitely generated, it would yield an infinite
+chain of strict submodules of $V$.
+
+We now observe that $\cO$ is abelian---in fact, by a standard result, the above
+closure properties are sufficient for a subcategory of an abelian category to
+remain abelian.
+
+Furthermore, $\cO$ is closed under finite tensor products. Finite generation and
+local $\fn$-finiteness are preserved because the tensor is finite. Letting $V
+	\cong \bigoplus_{\lambda\in\fh^*}V_\lambda$ and $W \cong
+	\bigoplus_{\mu\in\fh^*}W_\mu$, we have
+\begin{align*}
+	V\otimes W & \cong (\bigoplus_{\lambda\in\fh^*}
+	V_\lambda)\otimes(\bigoplus_{\mu\in\fh^*} W_\mu)                                                     \\
+	           & \cong \bigoplus_{\lambda,\mu\in\fh^*}(V_\lambda\otimes W_\mu)                           \\
+	           & \cong \bigoplus_{\nu\in\fh^*}\bigoplus_{\lambda + \mu = \nu} (V_\lambda \otimes W_\mu).
+\end{align*}
+Since $V_\lambda\otimes W_\mu\subseteq (V\otimes W)_{\lambda + \mu}$, now \[
+	\bigoplus_{\lambda + \mu = \nu} (V_\lambda \otimes W_\mu) \subseteq (V\otimes W)_\nu,
+\]and so up to isomorphism, \[
+	V\otimes W\subseteq \bigoplus_{\nu\in\fh^*} (V\otimes W)_\nu\subseteq V\otimes
+	W.
+\]Because all the inclusions involved are natural in $V$ and $W$, isormorphism
+holds\footnote{
+	We remark that this proof, which follows~\cite[Lemma 19.1(ii)]{carter},
+	applies in the much more general setting of abelian categories whose objects
+	break down into blocks indexed by an abelian group, in this case $\fh^*$.
+	Indeed, categorically, the proof amounts to applying naturality of the
+	adjunction between $\otimes$ and $\Hom$.
+}.
+
+For completeness, we state without proof that $\cO$ is Artinian. We will not
+rely on this result here. For a proof, see~\cite[Section 1.11]{humphreys}.
+
+\section{The Central Character Decomposition}
+\label{sec:decomposition}
+
+\subsection{Central Characters}
+
+In the case of finite-dimensional modules, the representation theory is
+controlled by the action of the Casimir invariant $\Omega\in Z\fg$. For
+modules in $\cO$ the situation is more complicated: we need to consider the
+action of $Z\fg$ as a whole.
+
+\begin{dfn}[central character]\label{def:central character}
+	A \emph{central character} is an algebra homomorphism \[
+		\chi: Z\fg\rightarrow\CC.
+	\]
+	A module $V$ has central character $\chi$ if $Z\fg$ acts on $V$ by $\chi$.
+\end{dfn}
+
+Our aim in this section is to classify the central characters.
+We first observe that, while an arbitrary module does not necessarily have a
+central character, simple modules do. In particular, for a simple weight module
+$L(\lambda)$, we write $\chi_\lambda$ for its central character.
+
+We will work towards the following theorem:
+
+\begin{thm}[Harish-Chandra~\cite{harish-chandra}]\label{thm:harish-chandra}
+	Every central character is of the form $\chi_\lambda$ for a weight
+	$\lambda\in\fh^*$.
+\end{thm}
+
+\begin{proof}
+	Our strategy will be to construct a homomorphism $\psi: Z\fg\rightarrow U\fh$,
+	called the \emph{twisted Harish-Chandra homomorphism}, which restricts to an
+	isomorphism $Z\fg\simeq U\fh^W$, where the latter is the set of $W$-invariants
+	in $U\fh$. We can then transport a given central character $\chi$ along this
+	isomorphism to obtain an algebra homomorphism $U\fh^W\rightarrow\CC$, which
+	extends to a homomorphism $\varphi_\chi: U\fh\rightarrow\CC$.
+
+	Now the algebra $U\fh$ is naturally isomorphic (by taking the double-dual) to
+	the algebra of polynomial functions on $\fh^*$. Naturality associates to any
+	algebra homomorphism $U\fh\rightarrow\CC$ an element $\lambda\in\fh^*$ which
+	represnts the map $\text{ev}_\lambda: f\mapsto f(\lambda)$. However, each such
+	$\lambda$ already represents the map $\chi_\lambda$ defined above, yielding the
+	desired result. Less abstractly, letting $\lambda$
+	represent $\varphi_\chi$ and picking $z\in Z\fg$, we have that \[
+		\chi(z) = \varphi_\chi(\psi(z)) = \lambda(\psi(z)) = \chi_\lambda(z).
+	\]
+
+	As such, it remains to construct the promised homomorphism $\psi$. [TODO: this]
+\end{proof}
+
+% We first observe that the
+% kernel of each central character is a maximal ideal, since the image is a field,
+% and indeed that this association is bijective.
+
+\subsection{The Decomposition}
+
+Fix a $U\fg$-module $V\in\cO$. Because $Z\fg$ acts locally finitely, we expect
+to be able to decompose $V$ into finitely many blocks on which $Z\fg$ acts by a
+central character. We explore this decomposition here.
+
+For a central character $\chi$, define \[
+	V^\chi = \{v:  \text{for each $z\in Z\fg$}, (z - \chi(z))^l\cdot v =
+	0\text{ for some $l$}\}.
+\]
+We have that $V^\chi$ is a $U\fg$-submodule, since the $z$s commute through the
+action of $U\fg$. Furthermore, if $\chi\neq\zeta$, then $V^\chi\cap V^\zeta =
+	0$. Now since $Z\fg$ acts locally finitely on the module $V_\mu$, we conclude
+that \begin{equation}\label{eqn:partial decomposition}
+	V_\mu = \bigoplus_\chi (V^\chi\cap V_\mu),
+\end{equation}and so \begin{equation}\label{eqn:module decomposition}
+	V = \bigoplus_\chi V^\chi.
+\end{equation}Furthermore, this sum is finitely supported, since $V$ is
+finitely generated.
+
+We remark that each of the axioms of \Cref{def:category O} are needed here.
+In particular, we needed \ref{ax:n-finite} to get that $Z\fg$ acts locally
+finitely, which in turn implied \eqref{eqn:partial decomposition}. We needed
+\ref{ax:h-semisimple} to deconstruct $V$ as a weight module and conclude
+\eqref{eqn:module decomposition}. Finally, we needed \ref{ax:finitely generated}
+to conclude that the sum is finitely supported. As such, this decomposition
+relies fundamentally on the structure of $\cO$.
+
+Let $\cO_\chi$ be the full\footnote{
+	As before, the adjective ``full'' indicates that we keep some objects, and all of
+	the morphisms between those objects.
+} subcategory of $\cO$ consisting of modules $V$ such
+that $V = V^\chi$. Since each module decomposes $V$ into the direct sum of
+$V^\chi$s, we have the block decomposition\footnote{The direct sum of
+	abelian categories was defined in \Cref{sec:abelian categories}. To apply this
+	definition, we do need to ensure that each of the $\cO_\chi$s are
+	additive, but additivity is preserved under taking full subcategories, since
+	we keep the entire hom-set.} \[
+	\cO \simeq \bigoplus_\chi \cO_\chi.
+\]Indeed, objects in this category are tuples of $V^\chi$s, and the equivalence
+simply interprets these as their direct sum.
+
+	[I would like here to mention something about block decompositions in abelian
+		categories more generally. Because we work with higher-dimensional structures,
+		the block decomposition is really more like a product decomposition of objects,
+		and a direct sum decomposition of morphisms. Any abelian category has such a
+		decomposition, but they are usually very artificial---the magic here is that the
+		decomposition is entirely controlled by the central characters of simple weight
+		modules.]
+
+\section{Translation Functors}
+\label{sec:translation functors}
+
+[The plan is to define the translation functor $T^\lambda_\mu$, state without
+	proof its relation to the Weyl group (section 7.3 of Humphreys), and give some
+	intuition for the theorem in section 7.8, at least in the case of integral
+	weights. That theorem states that compatible integral
+	weights---those whose difference lies in the root lattice---generate
+	categorically equivalent blocks.
+
+	Honestly, depending how many pages it takes to complete the proof of the
+	Harish-Chandra theorem, I might not have room/time to include this section at
+	all.]
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+
+
+\nocite{*}
+\printbibliography
+
+\end{document}
